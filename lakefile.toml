@@ -1,0 +1,10 @@
+name = "Mbek"
+version = "0.1.0"
+defaultTargets = ["mbek"]
+
+[[lean_lib]]
+name = "Mbek"
+
+[[lean_exe]]
+name = "mbek"
+root = "Main"
