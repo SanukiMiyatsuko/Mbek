@@ -70,3 +70,18 @@ instance : linear_order A where
     · exact Or.inl (Or.inl h)
     · exact Or.inr (Or.inl h)
     · exact Or.inl (Or.inr h)
+
+namespace FundOrder
+
+inductive TransClosure {α : Sort u} (r : α → α → Prop) : α → α → Prop where
+| single {a b : α} : r a b → TransClosure r a b
+| tail {a b c : α} : TransClosure r a b → r b c → TransClosure r a c
+
+theorem TransClosure.trans {α : Sort u} {r : α → α → Prop}
+    {a b c : α} (hab : TransClosure r a b) (hbc : TransClosure r b c) :
+    TransClosure r a c := by
+  induction hbc with
+  | single hstep => exact .tail hab hstep
+  | tail _ hstep ih => exact .tail ih hstep
+
+end FundOrder

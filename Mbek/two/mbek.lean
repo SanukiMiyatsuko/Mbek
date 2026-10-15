@@ -1,5 +1,4 @@
-import Mbek.Base
-import Mbek.order
+import Mbek.two.Base
 
 open T
 
