@@ -36,11 +36,9 @@ def T.fund0 (s t : T) : T :=
       | .ω => P s0 (T.fund0 s1 t) Z
     else P s0 s1 (T.fund0 s2 t)
 
-def T.ValidArg0 (s t : T) : Prop :=
-  match dom0 s with
-  | .Zero => False
-  | .One => t = Z
-  | .ω => T.IsN t
+inductive T.isOT0 : T → Prop where
+| base (n : Nat) : T.isOT0 (P n Z Z)
+| step (s : T) (h : T.isOT0 s) (n : Nat) : T.isOT0 (T.fund0 s (T.ofNat n))
 
 inductive Dom1 where
 | Zero
@@ -84,12 +82,9 @@ def T.fund1 (s t : T) : T :=
         else P s0 (T.fund1 s1 t) Z
     else P s0 s1 (T.fund1 s2 t)
 
-def T.ValidArg1 (s t : T) : Prop :=
-  match dom1 s with
-  | .Zero => False
-  | .One => t = Z
-  | .ω => T.IsN t
-  | .Ω l => T.index_Prop (P (l + 1) Z Z) t
+inductive T.isOT1 : T → Prop where
+| base (n : Nat) : T.isOT1 (P 0 (P n Z Z) Z)
+| step (s : T) (h : T.isOT1 s) (n : Nat) : T.isOT1 (T.fund1 s (T.ofNat n))
 
 inductive Dom2 where
 | Zero
@@ -225,6 +220,10 @@ decreasing_by
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P (l + 1) Z Z) s1) (T.size_lt_size_P_left s0 s1 s2)
     | exact T.size_lt_size_P_right s0 s1 s2
 
+inductive T.isOT2 : T → Prop where
+| base (n : Nat) : T.isOT2 (P 0 (P 0 (P n Z Z) Z) Z)
+| step (s : T) (h : T.isOT2 s) (n : Nat) : T.isOT2 (T.fund2 s (T.ofNat n))
+
 #eval! fund2 (parse! "0^0^2^1^2") (parse! "0 + 0 + 0")
 
 #eval! fund2 (parse! "0^0^(2^1^2 + 2^1^2)") (parse! "0 + 0 + 0")
@@ -240,6 +239,8 @@ decreasing_by
 #eval! fund2 (parse! "0^0^(1^0^1 + 1^0^1)") (parse! "0 + 0 + 0")
 
 #eval! fund2 (parse! "0^(0^1^0^1 + 0^1^0^1)") (parse! "0 + 0 + 0")
+
+#eval! fund2 (parse! "0^(0^1^1+0^(1^0^1^1+1))") (parse! "0 + 0 + 0")
 
 inductive Dom3 where
 | Zero
@@ -440,6 +441,10 @@ decreasing_by
     | exact Nat.lt_trans (T.dom3_Omega_size_lt s1 l l1 l2 _h1).2 (T.size_lt_size_P_left s0 s1 s2)
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P (l + 1) Z Z) s1) (T.size_lt_size_P_left s0 s1 s2)
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P l l1 Z) s1) (T.size_lt_size_P_left s0 s1 s2)
+
+inductive T.isOT3 : T → Prop where
+| base (n : Nat) : T.isOT3 (P 0 (P 0 (P 0 (P n Z Z) Z) Z) Z)
+| step (s : T) (h : T.isOT3 s) (n : Nat) : T.isOT3 (T.fund3 s (T.ofNat n))
 
 #eval! fund3 (parse! "0^0^0^2^2^1^1^2^1^2") (parse! "0 + 0 + 0")
 
@@ -824,6 +829,10 @@ decreasing_by
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P (l + 1) Z Z) s1) (T.size_lt_size_P_left s0 s1 s2)
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P l l1 Z) s1) (T.size_lt_size_P_left s0 s1 s2)
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P l l2 Z) s1) (T.size_lt_size_P_left s0 s1 s2)
+
+inductive T.isOT4 : T → Prop where
+| base (n : Nat) : T.isOT4 (P 0 (P 0 (P 0 (P 0 (P n Z Z) Z) Z) Z) Z)
+| step (s : T) (h : T.isOT4 s) (n : Nat) : T.isOT4 (T.fund4 s (T.ofNat n))
 
 #eval! fund4 (parse! "0^2^2^1^1^1^2^1^1^2") (parse! "0 + 0 + 0")
 
@@ -1385,3 +1394,7 @@ decreasing_by
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P l l1 Z) s1) (T.size_lt_size_P_left s0 s1 s2)
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P l l2 Z) s1) (T.size_lt_size_P_left s0 s1 s2)
     | exact Nat.lt_of_le_of_lt (T.drop_size_le (P l l3 Z) s1) (T.size_lt_size_P_left s0 s1 s2)
+
+inductive T.isOT5 : T → Prop where
+| base (n : Nat) : T.isOT5 (P 0 (P 0 (P 0 (P 0 (P 0 (P n Z Z) Z) Z) Z) Z) Z)
+| step (s : T) (h : T.isOT5 s) (n : Nat) : T.isOT5 (T.fund5 s (T.ofNat n))
