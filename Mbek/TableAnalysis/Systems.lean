@@ -33,6 +33,42 @@ partial def MRF.fmtSheet (t : MRF.T) : String :=
       | .P a b c _ => s!"p({a},{MRF.fmtSheet b},{MRF.fmtSheet c})"
       | .Z => "0")
 
+/-- 和を一般に読む MRF のパーサ（`1+1`, `w+1`, `p(…)+1+1` なども読める）。
+    項 := 単項 (`+` 単項)*、単項 := `0` | `1` | `w` | `ω` | `p(自然数,項,項)` -/
+partial def MRF.parseTerm (cs : List Char) : Option (MRF.T × List Char) := do
+  let (ms, rest) ← summands cs []
+  pure (ms.foldr (fun m acc => match m with
+    | .P a b c _ => .P a b c acc
+    | .Z => acc) .Z, rest)
+where
+  summands (cs : List Char) (acc : List MRF.T) : Option (List MRF.T × List Char) := do
+    let (m, rest) ← monomial cs
+    match rest with
+    | '+' :: rest' => summands rest' (acc ++ [m])
+    | _ => pure (acc ++ [m], rest)
+  monomial : List Char → Option (MRF.T × List Char)
+    | '0' :: rest => some (.Z, rest)
+    | '1' :: rest => some (.P 0 .Z .Z .Z, rest)
+    | 'w' :: rest => some (.P 0 .Z (.P 0 .Z .Z .Z) .Z, rest)
+    | 'ω' :: rest => some (.P 0 .Z (.P 0 .Z .Z .Z) .Z, rest)
+    | 'p' :: '(' :: rest => do
+      let ds := rest.takeWhile Char.isDigit
+      if ds.isEmpty then none
+      let n := ds.foldl (fun n c => n * 10 + (c.toNat - '0'.toNat)) 0
+      let rest := rest.drop ds.length
+      let rest ← match rest with | ',' :: r => some r | _ => none
+      let (b, rest) ← MRF.parseTerm rest
+      let rest ← match rest with | ',' :: r => some r | _ => none
+      let (c, rest) ← MRF.parseTerm rest
+      let rest ← match rest with | ')' :: r => some r | _ => none
+      pure (.P n b c .Z, rest)
+    | _ => none
+
+def MRF.parseSheet (s : String) : Option MRF.T :=
+  match MRF.parseTerm (s.toList.filter (!·.isWhitespace)) with
+  | some (t, []) => some t
+  | _ => none
+
 instance : OTSys MRF.T where
   beq := (· == ·)
   lt a b := decide (a < b)
@@ -44,7 +80,7 @@ instance : OTSys MRF.T where
     | .P a b c .Z => some (.P a b (MRF.T.add c (.P 0 .Z .Z .Z)) .Z)
     | _ => none
   base n := .P 0 .Z (.P n .Z .Z .Z) .Z
-  parse? s := MRF.T.ofString (s.replace "w" "ω")
+  parse? := MRF.parseSheet
   fmt := MRF.fmtSheet
 
 /-! ## Mbek -/

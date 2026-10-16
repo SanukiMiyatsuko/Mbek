@@ -5,9 +5,10 @@ import Mbek.TableAnalysis.Report
 表解析の検査・推定ツール。
 
     lake exe tablecheck <表.csv> [--a mrf] [--b mbek2] [--n 6]
-                        [--derived] [--loo] [--suggest "<A側の項>"]...
+                        [--derived] [--loo] [--suggest "<A側の項>"]... [--sort]
 
 CSV は 1 列目 = A 側、2 列目 = B 側、3 列目 = 備考（空でなければ「予想」扱い）。
+`--sort` は検査の代わりに、行を A 側の順序で並べ替えた CSV を出力する（行を任意の順に足してから整える用）。
 体系名: `mrf`（rasen の MRF）, `mbek0` … `mbek5`（Mbek を fund M で読む）。
 -/
 
@@ -21,6 +22,7 @@ structure Opts where
   derived : Bool := false
   loo : Bool := false
   suggest : Array String := #[]
+  sort : Bool := false
 
 def parseArgs : List String → Opts → Except String Opts
   | [], o => if o.path.isEmpty then .error "CSV のパスを指定してください" else .ok o
@@ -30,12 +32,20 @@ def parseArgs : List String → Opts → Except String Opts
   | "--derived" :: rest, o => parseArgs rest { o with derived := true }
   | "--loo" :: rest, o => parseArgs rest { o with loo := true }
   | "--suggest" :: s :: rest, o => parseArgs rest { o with suggest := o.suggest.push s }
+  | "--sort" :: rest, o => parseArgs rest { o with sort := true }
   | s :: rest, o =>
     if s.startsWith "--" then .error s!"不明なオプション {s}" else parseArgs rest { o with path := s }
 
 def run (A B : Type) [OTSys A] [OTSys B] (o : Opts) : IO UInt32 := do
   let content ← IO.FS.readFile o.path
   let tbl : Table A B := loadTable content
+  if o.sort then
+    let lines := content.splitOn "\n"
+    for (l, _) in tbl.skipped do
+      IO.println ((lines.getD (l - 1) "").replace "\r" "")
+    for r in tbl.rows.toList.mergeSort (fun r s => ltB r.a s.a || r.a == s.a) do
+      IO.println s!"\"{fmt r.a}\",{fmt r.b},{r.note}"
+    return 0
   IO.println s!"# 表解析レポート\n"
   IO.println s!"- ファイル: {o.path}"
   IO.println s!"- A = {o.a}, B = {o.b}, 基本列は n = 0..{o.n - 1} まで計算"
