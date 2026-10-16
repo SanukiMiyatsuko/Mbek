@@ -239,6 +239,8 @@ inductive T.isOT2 : T → Prop where
 
 #eval! fund2 (parse! "0^(0^1^0^1 + 0^1^0^1)") (parse! "0 + 0 + 0")
 
+#eval! fund2 (parse! "0^(0^1^1+0^1^(0^1^1+0^1^0^1^1))") (parse! "0 + 0 + 0")
+
 #eval! fund2 (parse! "0^(0^1^1+0^(1^0^1^1+1))") (parse! "0 + 0 + 0")
 
 inductive Dom3 where

@@ -350,11 +350,25 @@ def T.fund (s t : T) : T :=
         else P s0 s1 (fund s2 t) Z
     else P s0 s1 s2 (fund s3 t)
 
-#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(0,p(1,0,0),p(0,p(1,0,0),0)),0))") (ofNat 4)
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0),p(1,0,0)+p(0,p(1,0,0),0)))") (ofNat 4)
 
-#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(0,p(1,0,0),0)+p(0,p(1,0,0),0),0))") (ofNat 4)
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0),p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0),0)))") (ofNat 4)
 
-#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0),p(1,0,0)+p(0,p(0,p(1,0,0),0)+1,0)),0))") (ofNat 4)
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0)+1,0))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0)+1,0),0))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(1,0,0),0))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),p(1,0,0)))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),p(1,0,0)+p(0,p(1,0,0),0)))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),p(1,0,0)+p(0,p(0,p(1,0,0),0),0)))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0))") (ofNat 4)
+
+#eval fund (parse! "p(0,0,p(1,0,0)+p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0)+p(0,p(0,p(1,0,0),0),p(1,0,0)+p(0,p(1,0,0),0)),0))") (ofNat 4)
 
 inductive T.isOT : T → Prop where
 | base (n : Nat) : T.isOT (P 0 Z (P n Z Z Z) Z)
