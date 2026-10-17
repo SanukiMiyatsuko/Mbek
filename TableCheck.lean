@@ -9,7 +9,7 @@ import Mbek.TableAnalysis.Report
 
 CSV は 1 列目 = A 側、2 列目 = B 側、3 列目 = 備考（空でなければ「予想」扱い）。
 `--sort` は検査の代わりに、行を A 側の順序で並べ替えた CSV を出力する（行を任意の順に足してから整える用）。
-体系名: `mrf`（rasen の MRF）, `mbek0` … `mbek5`（Mbek を fund M で読む）。
+体系名: `mrf`（rasen の MRF）, `mbek0` … `mbek5`（Mbek を fund M で読む）, `mbekH`（Mbek を fundH で読む）。
 -/
 
 open TA OTSys
@@ -83,6 +83,7 @@ def sysDispatch (o : Opts) : IO UInt32 :=
     | "mbek3" => run A (MbekT 3) o
     | "mbek4" => run A (MbekT 4) o
     | "mbek5" => run A (MbekT 5) o
+    | "mbekH" => run A MbekHT o
     | s => do IO.eprintln s!"不明な体系 {s}"; return 2
   match o.a with
   | "mrf" => withB MRF.T
@@ -92,6 +93,7 @@ def sysDispatch (o : Opts) : IO UInt32 :=
   | "mbek3" => withB (MbekT 3)
   | "mbek4" => withB (MbekT 4)
   | "mbek5" => withB (MbekT 5)
+  | "mbekH" => withB MbekHT
   | s => do IO.eprintln s!"不明な体系 {s}"; return 2
 
 def main (args : List String) : IO UInt32 :=

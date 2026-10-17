@@ -140,7 +140,7 @@ lake exe tablecheck data/mrf_mbek2.csv
 
 | オプション | 内容 |
 |---|---|
-| `--a mrf` / `--b mbek2` | 体系（`mrf`, `mbek0`〜`mbek5`）。A と B を入れ替えて逆向きにも使える |
+| `--a mrf` / `--b mbek2` | 体系（`mrf`, `mbek0`〜`mbek5`, `mbekH`）。A と B を入れ替えて逆向きにも使える |
 | `--n 6` | 基本列を何項まで見るか |
 | `--derived` | FS 閉包で得た派生対応を CSV で出力する |
 | `--suggest "<A側の項>"` | その項の B 側の候補を、像と根拠つきで出す（複数指定可） |

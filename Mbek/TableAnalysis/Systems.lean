@@ -1,5 +1,6 @@
 import Mbek.TableAnalysis.Core
 import Mbek.two.mbek
+import Mbek.two.hyper
 import Mbek.three.rasen
 
 /-!
@@ -7,6 +8,7 @@ import Mbek.three.rasen
 
 * `MRF.T` : rasen の MRF（`p(s0,s1,s2)+s3`、表では `w` = ω）
 * `MbekT M` : Mbek の項を `fund M`（M = 0..5）で読むもの
+* `MbekHT` : Mbek の項を `fundH`（弱 hyper-Mahlo）で読むもの
 -/
 
 /-! ## MRF -/
@@ -124,5 +126,33 @@ instance (M : Nat) : OTSys (MbekT M) where
     | ⟨.P n a .Z⟩ => some ⟨.P n (T.add a (.P 0 .Z .Z)) .Z⟩
     | _ => none
   base n := ⟨Nat.repeat (fun x => .P 0 x .Z) M (.P n .Z .Z)⟩
+  parse? s := (parseT s).map (⟨·⟩)
+  fmt s := String.ofList ((T.fmt s.t).pretty.toList.filter (· != ' '))
+
+/-! ## Mbek（弱 hyper-Mahlo） -/
+
+/-- Mbek の項を `fundH` で読むためのラッパー -/
+structure MbekHT where
+  t : T
+
+instance : TreeLike MbekHT where
+  zero := ⟨.Z⟩
+  label | ⟨.Z⟩ => none | ⟨.P n _ _⟩ => some n
+  kids | ⟨.Z⟩ => [] | ⟨.P _ a b⟩ => [⟨a⟩, ⟨b⟩]
+  node n ks := match ks with
+    | [a, b] => ⟨.P n a.t b.t⟩
+    | _ => ⟨.Z⟩
+
+instance : OTSys MbekHT where
+  beq a b := a.t == b.t
+  lt a b := decide (a.t < b.t)
+  fund s n := ⟨T.fundH s.t (T.ofNat n)⟩
+  isSucc s := T.domH s.t == .One
+  succ s := ⟨T.add s.t (.P 0 .Z .Z)⟩
+  atom l := ⟨.P l .Z .Z⟩
+  omegaMul
+    | ⟨.P n a .Z⟩ => some ⟨.P n (T.add a (.P 0 .Z .Z)) .Z⟩
+    | _ => none
+  base n := ⟨.P 0 (.P 0 (.P n .Z .Z) .Z) .Z⟩
   parse? s := (parseT s).map (⟨·⟩)
   fmt s := String.ofList ((T.fmt s.t).pretty.toList.filter (· != ' '))
